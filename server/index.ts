@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { connectDB } from "./db";
+import { connectDB, dbCheckMiddleware } from "./db";
 import { handleSignup, handleLogin } from "./routes/auth";
 import { handleCreateCourse, handleGetCourses, handleGetCourseById, handleEnroll, handleGetEnrolledCourses } from "./routes/course";
 import { protect, instructorOnly } from "./auth";
@@ -25,6 +25,10 @@ export function createServer() {
 
   // Connect to DB
   connectDB();
+
+  // Apply DB check for all routes that interact with it
+  // (Optional: only for certain routes, but here we'll just check for most)
+  // app.use("/api", dbCheckMiddleware);
 
   // Auth routes
   app.post("/api/auth/signup", handleSignup);

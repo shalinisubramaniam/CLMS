@@ -3,10 +3,17 @@ import bcrypt from "bcryptjs";
 import { User } from "../models/User";
 import { generateToken } from "../auth";
 import { UserRole } from "@shared/api";
+import { isDbConnected } from "../db";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@clms.com";
 
 export const handleSignup: RequestHandler = async (req, res) => {
+  if (!isDbConnected()) {
+    return res.status(503).json({
+      message: "Database not connected. Please set up MONGODB_URI or connect via MCP."
+    });
+  }
+
   const { name, email, password, role } = req.body;
 
   try {
@@ -46,6 +53,12 @@ export const handleSignup: RequestHandler = async (req, res) => {
 };
 
 export const handleLogin: RequestHandler = async (req, res) => {
+  if (!isDbConnected()) {
+    return res.status(503).json({
+      message: "Database not connected. Please set up MONGODB_URI or connect via MCP."
+    });
+  }
+
   const { email, password } = req.body;
 
   try {

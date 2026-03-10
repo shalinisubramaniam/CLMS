@@ -11,4 +11,4 @@ const UserSchema = new Schema({
   lastActive: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-export const User = mongoose.model("User", UserSchema);
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);

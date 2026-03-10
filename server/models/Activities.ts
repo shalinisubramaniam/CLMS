@@ -8,7 +8,7 @@ const EnrollmentSchema = new Schema({
   enrolledDate: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-export const Enrollment = mongoose.model("Enrollment", EnrollmentSchema);
+export const Enrollment = mongoose.models.Enrollment || mongoose.model("Enrollment", EnrollmentSchema);
 
 // QuizResult Schema
 const QuizResultSchema = new Schema({
@@ -19,7 +19,7 @@ const QuizResultSchema = new Schema({
   date: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-export const QuizResult = mongoose.model("QuizResult", QuizResultSchema);
+export const QuizResult = mongoose.models.QuizResult || mongoose.model("QuizResult", QuizResultSchema);
 
 // Achievement Schema
 const AchievementSchema = new Schema({
@@ -28,4 +28,4 @@ const AchievementSchema = new Schema({
   date: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-export const Achievement = mongoose.model("Achievement", AchievementSchema);
+export const Achievement = mongoose.models.Achievement || mongoose.model("Achievement", AchievementSchema);

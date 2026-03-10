@@ -4,12 +4,25 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/clms";
 
 export async function connectDB() {
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
+    });
     console.log("MongoDB connected successfully");
   } catch (err) {
     console.error("MongoDB connection error:", err);
-    // In dev environment, we don't want to crash the whole vite process
-    // especially if the user hasn't set up the connection yet.
     console.warn("Continuing without MongoDB. Some features will not work until MONGODB_URI is configured.");
   }
 }
+
+export function isDbConnected() {
+  return mongoose.connection.readyState === 1;
+}
+
+export const dbCheckMiddleware: RequestHandler = (req, res, next) => {
+  if (!isDbConnected()) {
+    return res.status(503).json({
+      message: "Database not connected. Please connect a MongoDB database using the MCP popover or set MONGODB_URI in settings."
+    });
+  }
+  next();
+};
