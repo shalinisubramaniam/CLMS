@@ -26,9 +26,8 @@ export function createServer() {
   // Connect to DB
   connectDB();
 
-  // Apply DB check for all routes that interact with it
-  // (Optional: only for certain routes, but here we'll just check for most)
-  // app.use("/api", dbCheckMiddleware);
+  // Apply DB check for all /api routes that interact with it
+  app.use("/api", dbCheckMiddleware);
 
   // Auth routes
   app.post("/api/auth/signup", handleSignup);

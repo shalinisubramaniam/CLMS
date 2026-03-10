@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
+import { RequestHandler } from "express";
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/clms";
 
 export async function connectDB() {
   try {
     await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of default 30s
+      serverSelectionTimeoutMS: 5000,
     });
+    // Global setting to disable buffering to avoid long timeouts on DB failure
+    mongoose.set('bufferCommands', false);
     console.log("MongoDB connected successfully");
   } catch (err) {
     console.error("MongoDB connection error:", err);
