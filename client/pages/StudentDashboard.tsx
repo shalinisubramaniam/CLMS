@@ -13,31 +13,33 @@ import {
   PlayCircle, 
   ArrowRight,
   TrendingUp,
-  Award
+  Award,
+  Sparkles
 } from "lucide-react";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/my-courses", {
-          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCourses(data);
-        }
+        const [courseRes, recRes] = await Promise.all([
+          fetch("/api/my-courses", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } }),
+          fetch("/api/recommendations", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
+        ]);
+
+        if (courseRes.ok) setCourses(await courseRes.json());
+        if (recRes.ok) setRecommendations(await recRes.json());
       } catch (error) {
-        console.error("Failed to fetch courses:", error);
+        console.error("Failed to fetch dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourses();
+    fetchData();
   }, []);
 
   if (loading) return (
@@ -184,6 +186,38 @@ export default function StudentDashboard() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Personalized Recommendations */}
+            {recommendations && recommendations.courses?.length > 0 && (
+              <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-slate-900 text-white relative">
+                <div className="absolute top-0 right-0 p-4 opacity-20 rotate-12 scale-150">
+                  <Sparkles size={120} className="text-indigo-500" />
+                </div>
+                <CardHeader className="relative z-10 pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Sparkles size={18} className="text-amber-400" />
+                    Personalized For You
+                  </CardTitle>
+                  <CardDescription className="text-slate-400 font-medium">
+                    {recommendations.reason}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative z-10 space-y-4 pt-4">
+                  {recommendations.courses.map((course: any) => (
+                    <Link key={course._id} to={`/course/${course._id}`} className="flex gap-4 items-center group">
+                      <img src={course.thumbnail} className="h-12 w-16 object-cover rounded-lg border border-white/10 group-hover:scale-105 transition-transform" />
+                      <div className="flex-grow">
+                        <p className="text-sm font-bold truncate group-hover:text-indigo-300 transition-colors">{course.title}</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{course.category}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <Button variant="ghost" className="w-full text-indigo-400 font-bold hover:text-indigo-300 hover:bg-white/5 mt-2" asChild>
+                    <Link to="/courses">Browse Catalog</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

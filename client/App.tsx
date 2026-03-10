@@ -13,6 +13,13 @@ import Signup from "./pages/Signup";
 import StudentDashboard from "./pages/StudentDashboard";
 import InstructorDashboard from "./pages/InstructorDashboard";
 import Courses from "./pages/Courses";
+import AiAssistant from "./pages/AiAssistant";
+import CoursePlayer from "./pages/CoursePlayer";
+import QuizPage from "./pages/QuizPage";
+import CreateCourse from "./pages/CreateCourse";
+import Leaderboard from "./pages/Leaderboard";
+import InstructorAnalytics from "./pages/InstructorAnalytics";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
 
@@ -47,10 +54,18 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/courses" element={<Courses />} />
-            <Route path="/course/:id" element={<PlaceholderPage title="Course Player" description="Watch video lessons and take notes." />} />
-            <Route path="/quiz/:id" element={<PlaceholderPage title="Quiz Page" description="Test your knowledge with auto-graded quizzes." />} />
-            <Route path="/ai-assistant" element={<PlaceholderPage title="AI Assistant" description="Ask questions and get instant explanations." />} />
-            <Route path="/leaderboard" element={<PlaceholderPage title="Leaderboard" description="See how you rank against other learners." />} />
+            <Route path="/course/:id" element={
+              <ProtectedRoute roles={["student", "instructor", "admin"]}>
+                <CoursePlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="/quiz/:id" element={
+              <ProtectedRoute roles={["student", "instructor", "admin"]}>
+                <QuizPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/ai-assistant" element={<AiAssistant />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
 
             {/* Instructor Routes */}
             <Route path="/instructor/dashboard" element={
@@ -60,7 +75,12 @@ const App = () => (
             } />
             <Route path="/instructor/create-course" element={
               <ProtectedRoute roles={["instructor", "admin"]}>
-                <PlaceholderPage title="Create Course" />
+                <CreateCourse />
+              </ProtectedRoute>
+            } />
+            <Route path="/instructor/analytics/:id" element={
+              <ProtectedRoute roles={["instructor", "admin"]}>
+                <InstructorAnalytics />
               </ProtectedRoute>
             } />
             <Route path="/instructor/analytics" element={
@@ -72,7 +92,7 @@ const App = () => (
             {/* Admin Route (Hidden) */}
             <Route path="/admin" element={
               <ProtectedRoute roles={["admin"]}>
-                <PlaceholderPage title="Admin Panel" description="Manage users, courses, and platform-wide analytics." />
+                <AdminDashboard />
               </ProtectedRoute>
             } />
 
