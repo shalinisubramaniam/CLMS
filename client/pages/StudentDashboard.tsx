@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
   BookOpen, 
@@ -19,20 +19,20 @@ import {
 
 export default function StudentDashboard() {
   const { user } = useAuth();
-  const [courses, setCourses] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [courseRes, recRes] = await Promise.all([
-          fetch("/api/my-courses", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } }),
-          fetch("/api/recommendations", { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } })
-        ]);
+        const response = await fetch("/api/student/dashboard", {
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+        });
 
-        if (courseRes.ok) setCourses(await courseRes.json());
-        if (recRes.ok) setRecommendations(await recRes.json());
+        if (response.ok) {
+          const data = await response.json();
+          setDashboardData(data);
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -50,6 +50,16 @@ export default function StudentDashboard() {
     </Layout>
   );
 
+  const courses = dashboardData?.enrolledCourses || [];
+  const recommendations = dashboardData?.recommendations || [];
+
+  const stats = [
+    { label: "Courses Enrolled", value: dashboardData?.totalCourses || 0, icon: BookOpen, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Total Points", value: dashboardData?.totalPoints || 0, icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Badges Earned", value: dashboardData?.badges?.length || 0, icon: Trophy, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Learning Streak", value: `${dashboardData?.learningStreak || 0} days`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+  ];
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -60,12 +70,7 @@ export default function StudentDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {[
-            { label: "Courses Enrolled", value: courses.length, icon: BookOpen, color: "text-blue-600", bg: "bg-blue-50" },
-            { label: "Total Points", value: user?.points || 0, icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
-            { label: "Badges Earned", value: user?.badges?.length || 0, icon: Trophy, color: "text-purple-600", bg: "bg-purple-50" },
-            { label: "Learning Streak", value: `${user?.streaks || 0} days`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-          ].map((stat, idx) => (
+          {stats.map((stat, idx) => (
             <Card key={idx} className="border-slate-100 shadow-sm">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
@@ -93,7 +98,7 @@ export default function StudentDashboard() {
             </div>
 
             <div className="space-y-4">
-              {courses.length > 0 ? courses.map((course) => (
+              {courses.length > 0 ? courses.map((course: any) => (
                 <Card key={course._id} className="overflow-hidden border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-0">
                     <div className="flex flex-col sm:flex-row">
@@ -117,9 +122,9 @@ export default function StudentDashboard() {
                         <div className="mt-4">
                           <div className="flex justify-between text-xs text-slate-500 mb-1.5">
                             <span>Progress</span>
-                            <span className="font-medium text-slate-900">65%</span>
+                            <span className="font-medium text-slate-900">{course.progress || 0}%</span>
                           </div>
-                          <Progress value={65} className="h-2" />
+                          <Progress value={course.progress || 0} className="h-2" />
                         </div>
                       </div>
                     </div>
@@ -143,78 +148,48 @@ export default function StudentDashboard() {
           {/* Side Column: Recent Activity & Badges */}
           <div className="space-y-8">
             <Card className="border-slate-100 shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold">Recent Activity</CardTitle>
-                <CardDescription>Your latest learning actions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {[
-                    { text: "Completed 'Intro to React' quiz", time: "2 hours ago", icon: Trophy, color: "text-amber-500" },
-                    { text: "Watched 'JSX Fundamentals' video", time: "5 hours ago", icon: PlayCircle, color: "text-blue-500" },
-                    { text: "Enrolled in 'Advanced Node.js'", time: "Yesterday", icon: BookOpen, color: "text-indigo-500" },
-                  ].map((activity, idx) => (
-                    <div key={idx} className="flex gap-4 items-start">
-                      <div className={`mt-1 flex-shrink-0 ${activity.color}`}>
-                        <activity.icon size={18} />
+              <CardContent className="pt-6 pb-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Recent Activity</h3>
+                <div className="space-y-4">
+                  {dashboardData?.recentActivity && dashboardData.recentActivity.length > 0 ? (
+                    dashboardData.recentActivity.map((activity: any, idx: number) => (
+                      <div key={idx} className="flex gap-3 items-start">
+                        <Clock size={16} className="text-slate-400 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">{activity.text}</p>
+                          <p className="text-xs text-slate-500 mt-1">{activity.time}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900 leading-snug">{activity.text}</p>
-                        <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                          <Clock size={12} /> {activity.time}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-500">No recent activity yet. Start learning!</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-slate-100 shadow-sm bg-gradient-to-br from-indigo-600 to-violet-700 text-white border-none">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-white/20 rounded-lg">
-                    <Award size={24} className="text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold">Unclaimed Reward</h3>
-                </div>
-                <p className="text-indigo-100 text-sm mb-6 leading-relaxed">
-                  You've earned 50 bonus points for completing your 7-day streak!
-                </p>
-                <Button className="w-full bg-white text-indigo-600 hover:bg-indigo-50 border-none font-bold">
-                  Claim Points
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Personalized Recommendations */}
-            {recommendations && recommendations.courses?.length > 0 && (
+            {recommendations.length > 0 && (
               <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-slate-900 text-white relative">
                 <div className="absolute top-0 right-0 p-4 opacity-20 rotate-12 scale-150">
                   <Sparkles size={120} className="text-indigo-500" />
                 </div>
-                <CardHeader className="relative z-10 pb-2">
-                  <CardTitle className="text-lg flex items-center gap-2">
+                <CardContent className="relative z-10 p-6">
+                  <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
                     <Sparkles size={18} className="text-amber-400" />
-                    Personalized For You
-                  </CardTitle>
-                  <CardDescription className="text-slate-400 font-medium">
-                    {recommendations.reason}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative z-10 space-y-4 pt-4">
-                  {recommendations.courses.map((course: any) => (
-                    <Link key={course._id} to={`/course/${course._id}`} className="flex gap-4 items-center group">
-                      <img src={course.thumbnail} className="h-12 w-16 object-cover rounded-lg border border-white/10 group-hover:scale-105 transition-transform" />
-                      <div className="flex-grow">
-                        <p className="text-sm font-bold truncate group-hover:text-indigo-300 transition-colors">{course.title}</p>
-                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{course.category}</p>
-                      </div>
-                    </Link>
-                  ))}
-                  <Button variant="ghost" className="w-full text-indigo-400 font-bold hover:text-indigo-300 hover:bg-white/5 mt-2" asChild>
-                    <Link to="/courses">Browse Catalog</Link>
-                  </Button>
+                    Recommended For You
+                  </h3>
+                  <p className="text-slate-400 text-sm font-medium mb-4">Based on your learning history</p>
+                  <div className="space-y-3">
+                    {recommendations.slice(0, 3).map((course: any) => (
+                      <Link key={course._id} to={`/course/${course._id}`} className="flex gap-3 items-center group">
+                        <img src={course.thumbnail} className="h-10 w-14 object-cover rounded border border-white/10 group-hover:scale-105 transition-transform" />
+                        <div className="flex-grow">
+                          <p className="text-sm font-bold truncate group-hover:text-indigo-300 transition-colors">{course.title}</p>
+                          <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{course.category}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}

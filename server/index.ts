@@ -14,6 +14,9 @@ import { handleGetLeaderboard } from "./routes/leaderboard";
 import { handleGetCourseAnalytics } from "./routes/analytics";
 import { handleGetAdminUsers, handleDeleteUser, handleDeleteCourseAdmin } from "./routes/admin";
 import { handleGetRecommendations } from "./routes/recommendations";
+import { handleGetStudentDashboard, handleUpdateProgress, handleGetCourseProgress } from "./routes/student";
+import { handleCreateDiscussion, handleGetCourseDiscussions, handleAddReply, handleGetCourseNotes } from "./routes/discussion";
+import { handleGetInstructorDashboard, handleGetInstructorCourseStudents, handleCreateInstructorCourse, handleAddLesson } from "./routes/instructor-dashboard";
 
 export function createServer() {
   const app = express();
@@ -71,6 +74,23 @@ export function createServer() {
 
   // Recommendation route
   app.get("/api/recommendations", protect, handleGetRecommendations);
+
+  // Student routes
+  app.get("/api/student/dashboard", protect, handleGetStudentDashboard);
+  app.post("/api/progress/update", protect, handleUpdateProgress);
+  app.get("/api/courses/:courseId/progress", protect, handleGetCourseProgress);
+
+  // Discussion routes
+  app.post("/api/discussions", protect, handleCreateDiscussion);
+  app.get("/api/discussions/:courseId", handleGetCourseDiscussions);
+  app.post("/api/discussions/:discussionId/reply", protect, handleAddReply);
+  app.get("/api/courses/:courseId/notes", protect, handleGetCourseNotes);
+
+  // Instructor dashboard routes
+  app.get("/api/instructor/dashboard", protect, handleGetInstructorDashboard);
+  app.get("/api/instructor/courses/:courseId/students", protect, handleGetInstructorCourseStudents);
+  app.post("/api/instructor/courses", protect, instructorOnly, handleCreateInstructorCourse);
+  app.post("/api/instructor/lessons", protect, instructorOnly, handleAddLesson);
 
   // Seed route (for testing purposes)
   app.get("/api/seed", handleSeedData);
