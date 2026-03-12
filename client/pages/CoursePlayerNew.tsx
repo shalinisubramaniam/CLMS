@@ -5,18 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  PlayCircle, 
-  FileText, 
-  CheckCircle2, 
-  ArrowLeft, 
-  ChevronRight, 
+import {
+  PlayCircle,
+  FileText,
+  CheckCircle2,
+  ArrowLeft,
+  ChevronRight,
   BrainCircuit,
   MessageSquare,
   Award,
   Download,
   Send,
-  Loader2
+  Loader2,
+  Clock
 } from "lucide-react";
 
 export default function CoursePlayer() {
@@ -182,18 +183,22 @@ export default function CoursePlayer() {
               </div>
             </div>
 
-            <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/5 relative group mb-8">
+            <div className="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/5 relative group mb-8">
               {currentLesson ? (
-                <iframe
-                  className="w-full h-full"
-                  src={currentLesson.videoUrl}
-                  title={currentLesson.title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
+                <video
+                  key={currentLesson._id}
+                  controls
+                  controlsList="nodownload"
+                  className="w-full h-auto rounded-2xl"
+                  poster={course.thumbnail}
+                >
+                  <source src={currentLesson.videoUrl} type="video/mp4" />
+                  <div className="flex items-center justify-center h-96 text-slate-400 font-semibold">
+                    Your browser does not support the video tag. Please try a different browser.
+                  </div>
+                </video>
               ) : (
-                <div className="flex items-center justify-center h-full text-slate-500 font-bold text-xl uppercase tracking-widest">
+                <div className="flex items-center justify-center h-96 text-slate-500 font-bold text-xl uppercase tracking-widest">
                   Select a lesson to begin
                 </div>
               )}
@@ -219,8 +224,14 @@ export default function CoursePlayer() {
               <div className="mt-8">
                 <h3 className="text-lg font-bold text-white mb-3">About this lesson</h3>
                 <p className="text-slate-400 leading-relaxed max-w-4xl">
-                  {course.description}
+                  {currentLesson?.description || course.description}
                 </p>
+                {currentLesson?.duration && (
+                  <div className="mt-4 flex items-center gap-2 text-slate-500 text-sm">
+                    <Clock size={16} />
+                    <span>Duration: {Math.floor(currentLesson.duration / 60)} minutes</span>
+                  </div>
+                )}
               </div>
 
               {/* Discussions Section */}

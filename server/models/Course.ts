@@ -2,7 +2,9 @@ import mongoose, { Schema } from "mongoose";
 
 const LessonSchema = new Schema({
   title: { type: String, required: true },
+  description: { type: String, default: "" },
   videoUrl: { type: String, required: true },
+  duration: { type: Number, default: 0 }, // Duration in seconds
   notesUrl: { type: String }
 });
 
