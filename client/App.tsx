@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import StudentDashboard from "./pages/StudentDashboard";
 import InstructorDashboard from "./pages/InstructorDashboardNew";
 import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
 import AiAssistant from "./pages/AiAssistant";
 import CoursePlayer from "./pages/CoursePlayerNew";
 import QuizPage from "./pages/QuizPage";
@@ -52,6 +53,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/course-detail/:id" element={<CourseDetail />} />
             <Route path="/course/:id" element={
               <ProtectedRoute roles={["student", "instructor", "admin"]}>
                 <CoursePlayer />

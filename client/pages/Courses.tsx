@@ -18,6 +18,11 @@ export default function Courses() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [maxPrice, setMaxPrice] = useState(0);
+
+  // Get unique categories from courses
+  const categories = [...new Set(courses.map(c => c.category))].filter(Boolean);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -36,10 +41,13 @@ export default function Courses() {
     fetchCourses();
   }, []);
 
-  const filteredCourses = courses.filter(course => 
-    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         course.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || course.category === selectedCategory;
+    const matchesPrice = maxPrice === 0 || course.price <= maxPrice;
+    return matchesSearch && matchesCategory && matchesPrice;
+  });
 
   return (
     <Layout>
@@ -76,16 +84,29 @@ export default function Courses() {
               <Sparkles className="text-amber-500" size={20} />
               <span className="text-slate-700 font-semibold">{filteredCourses.length} courses found</span>
             </div>
-            <div className="flex gap-4">
-              <Button variant="outline" className="flex items-center gap-2 h-11 border-slate-200 bg-white">
-                <Filter size={18} />
-                Filter
-              </Button>
-              <select className="h-11 px-4 rounded-md border border-slate-200 bg-white text-slate-700 font-medium focus:ring-indigo-500">
-                <option>Most Popular</option>
-                <option>Newest First</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
+            <div className="flex gap-4 flex-wrap">
+              {/* Category Filter */}
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="h-11 px-4 rounded-md border border-slate-200 bg-white text-slate-700 font-medium focus:ring-indigo-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+
+              {/* Price Filter */}
+              <select
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="h-11 px-4 rounded-md border border-slate-200 bg-white text-slate-700 font-medium focus:ring-indigo-500"
+              >
+                <option value={0}>All Prices</option>
+                <option value={4999}>Up to ₹4,999</option>
+                <option value={7999}>Up to ₹7,999</option>
+                <option value={10000}>Up to ₹10,000</option>
               </select>
             </div>
           </div>
@@ -130,9 +151,9 @@ export default function Courses() {
                     <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-slate-400 uppercase tracking-tighter">Price</span>
-                        <span className="text-2xl font-black text-slate-900">${course.price}</span>
+                        <span className="text-2xl font-black text-slate-900">₹{course.price.toLocaleString('en-IN')}</span>
                       </div>
-                      <Link to={`/course/${course._id}`}>
+                      <Link to={`/course-detail/${course._id}`}>
                         <Button size="lg" className="rounded-2xl px-6 h-12 shadow-md shadow-indigo-600/20 group">
                           View Course
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
