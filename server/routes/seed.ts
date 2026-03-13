@@ -73,21 +73,21 @@ export const handleSeedData: RequestHandler = async (req, res) => {
               {
                 title: "What is React?",
                 description: "Introduction to React and its core concepts",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_1.mp4",
-                duration: 720,
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
+                duration: 1200,
                 notesUrl: "https://example.com/lesson1.pdf"
               },
               {
                 title: "JSX and Components",
                 description: "Understanding JSX syntax and creating reusable components",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_2.mp4",
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
                 duration: 840,
                 notesUrl: "https://example.com/lesson2.pdf"
               },
               {
                 title: "Props and State",
                 description: "Managing data in React components",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_3.mp4",
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
                 duration: 900,
                 notesUrl: "https://example.com/lesson3.pdf"
               }
@@ -103,21 +103,21 @@ export const handleSeedData: RequestHandler = async (req, res) => {
               {
                 title: "useState Hook",
                 description: "Managing state with the useState hook",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_4.mp4",
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
                 duration: 780,
                 notesUrl: "https://example.com/lesson4.pdf"
               },
               {
                 title: "useEffect Hook",
                 description: "Side effects and lifecycle with useEffect",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_5.mp4",
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
                 duration: 850,
                 notesUrl: "https://example.com/lesson5.pdf"
               },
               {
                 title: "Context API",
                 description: "Global state management with Context API",
-                videoUrl: "https://res.cloudinary.com/demo/video/upload/v1/sample_lesson_6.mp4",
+                videoUrl: "https://res.cloudinary.com/duqmyxbta/video/upload/v1773410946/React_tutorial_for_beginners_480P_c2e4hz.mp4",
                 duration: 920,
                 notesUrl: "https://example.com/lesson6.pdf"
               }
@@ -132,7 +132,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         title: "Node.js Backend Development",
         description: "Build scalable backend systems with Node.js and Express. Learn about REST APIs, databases, authentication, and deployment strategies.",
         instructor: instructor2._id,
-        thumbnail: "https://images.unsplash.com/photo-1593720213428-28a5b9ed9461?q=80&w=2070&auto=format&fit=crop",
+        thumbnail: "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*pqb9zL3Y_YPSMu9kstLN7g.jpeg",
         price: 5999,
         category: "Backend",
         modules: [
@@ -239,7 +239,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         title: "UI/UX Design for Developers",
         description: "Learn design principles and create beautiful user interfaces. No design experience needed! Master Figma, responsive design, and modern UI trends.",
         instructor: instructor2._id,
-        thumbnail: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=2070&auto=format&fit=crop",
+        thumbnail: "https://www.webskittersacademy.in/wp-content/uploads/2024/10/Academy-Blog-Banner-23-10-2024.jpg",
         price: 3999,
         category: "Design",
         modules: [
