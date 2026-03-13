@@ -164,7 +164,7 @@ export default function CoursePlayer() {
       <div className="bg-slate-900 min-h-[calc(100vh-64px)] text-white">
         <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row">
           {/* Video Player Area */}
-          <div className="flex-grow p-4 lg:p-8">
+          <div className="flex-grow lg:flex-[3] p-4 lg:p-8">
             <div className="mb-6 flex items-center justify-between">
               <Link to="/student/dashboard" className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-medium transition-colors">
                 <ArrowLeft size={16} />
@@ -183,13 +183,13 @@ export default function CoursePlayer() {
               </div>
             </div>
 
-            <div className="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/5 relative group mb-8">
+            <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/5 relative group mb-8">
               {currentLesson ? (
                 <video
                   key={currentLesson._id}
                   controls
                   controlsList="nodownload"
-                  className="w-full h-auto rounded-2xl"
+                  className="w-full h-full object-cover rounded-2xl"
                   poster={course.thumbnail}
                 >
                   <source src={currentLesson.videoUrl} type="video/mp4" />
