@@ -167,7 +167,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-400 text-sm">© 2024 CLMS Project. All rights reserved.</p>
+            <p className="text-slate-400 text-sm">© 2026 CLMS Website. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -167,7 +167,7 @@ export default function Index() {
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-full bg-slate-200"></div>
                     <div>
-                      <p className="font-bold text-slate-900">Dr. Sarah Johnson</p>
+                      <p className="font-bold text-slate-900">Dr. Thanga Parvathi</p>
                       <p className="text-slate-500 text-sm">Computer Science Professor</p>
                     </div>
                   </div>
