@@ -12,6 +12,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import InstructorDashboard from "./pages/InstructorDashboardNew";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
+import PaymentPage from "./pages/PaymentPage";
 import AiAssistant from "./pages/AiAssistant";
 import CoursePlayer from "./pages/CoursePlayerNew";
 import QuizPage from "./pages/QuizPage";
@@ -54,6 +55,11 @@ const App = () => (
             } />
             <Route path="/courses" element={<Courses />} />
             <Route path="/course-detail/:id" element={<CourseDetail />} />
+            <Route path="/payment/:courseId" element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            } />
             <Route path="/course/:id" element={
               <ProtectedRoute roles={["student", "instructor", "admin"]}>
                 <CoursePlayer />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,36 +56,13 @@ export default function CourseDetail() {
     fetchCourse();
   }, [id, user]);
 
-  const handleEnroll = async () => {
+  const handleEnroll = () => {
     if (!user) {
       navigate("/login");
       return;
     }
 
-    setEnrolling(true);
-    setError("");
-    try {
-      const response = await fetch(`/api/courses/${id}/enroll`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-      });
-      
-      if (response.ok) {
-        setEnrolled(true);
-        // Redirect to course player after successful enrollment
-        setTimeout(() => {
-          navigate(`/course/${id}`);
-        }, 500);
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to enroll in course");
-      }
-    } catch (error) {
-      console.error("Enrollment error:", error);
-      setError("An error occurred during enrollment");
-    } finally {
-      setEnrolling(false);
-    }
+    navigate(`/payment/${id}`);
   };
 
   if (loading) return (
@@ -174,13 +152,12 @@ export default function CourseDetail() {
                       </Button>
                     </Link>
                   ) : (
-                    <Button 
-                      size="lg" 
-                      onClick={handleEnroll} 
-                      disabled={enrolling}
+                    <Button
+                      size="lg"
+                      onClick={handleEnroll}
                       className="w-full rounded-lg h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
                     >
-                      {enrolling ? "Enrolling..." : "Enroll Now"}
+                      Enroll Now
                     </Button>
                   )}
 

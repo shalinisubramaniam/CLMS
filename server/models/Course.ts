@@ -31,7 +31,8 @@ const CourseSchema = new Schema({
   thumbnail: { type: String, required: true },
   modules: [ModuleSchema],
   price: { type: Number, default: 0 },
-  category: { type: String, default: "Uncategorized" }
+  category: { type: String, default: "Uncategorized" },
+  students: [{ type: Schema.Types.ObjectId, ref: "User" }]
 }, { timestamps: true });
 
 export const Course = mongoose.models.Course || mongoose.model("Course", CourseSchema);

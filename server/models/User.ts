@@ -8,7 +8,8 @@ const UserSchema = new Schema({
   points: { type: Number, default: 0 },
   badges: [{ type: String }],
   streaks: { type: Number, default: 0 },
-  lastActive: { type: Date, default: Date.now }
+  lastActive: { type: Date, default: Date.now },
+  enrolledCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }]
 }, { timestamps: true });
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);

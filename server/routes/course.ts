@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Course } from "../models/Course";
 import { Enrollment } from "../models/Activities";
+import { User } from "../models/User";
 
 export const handleCreateCourse: RequestHandler = async (req, res) => {
   const { title, description, thumbnail, price, category } = req.body;
@@ -48,23 +49,48 @@ export const handleGetCourseById: RequestHandler = async (req, res) => {
   }
 };
 
-export const handleEnroll: RequestHandler = async (req, res) => {
-  const { courseId } = req.params;
+export const handleEnrollCourse: RequestHandler = async (req, res) => {
+  const courseId = req.params.courseId;
   const userId = (req as any).user.userId;
 
   try {
-    const enrollment = await Enrollment.findOne({ userId, courseId });
-    if (enrollment) {
+    const [user, course, existingEnrollment] = await Promise.all([
+      User.findById(userId),
+      Course.findById(courseId),
+      Enrollment.findOne({ userId, courseId })
+    ]);
+
+    if (!user || !course) {
+      return res.status(404).json({ message: "Course or user not found" });
+    }
+
+    const alreadyEnrolled =
+      existingEnrollment ||
+      user.enrolledCourses?.some((id: any) => id.toString() === courseId) ||
+      course.students?.some((id: any) => id.toString() === userId);
+
+    if (alreadyEnrolled) {
       return res.status(400).json({ message: "Already enrolled" });
     }
 
-    const newEnrollment = await Enrollment.create({ userId, courseId });
-    res.status(201).json(newEnrollment);
+    await Promise.all([
+      User.findByIdAndUpdate(userId, { $addToSet: { enrolledCourses: courseId } }),
+      Course.findByIdAndUpdate(courseId, { $addToSet: { students: userId } }),
+      Enrollment.create({ userId, courseId })
+    ]);
+
+    res.status(201).json({
+      message: "Enrollment successful",
+      courseId,
+      userId
+    });
   } catch (err) {
     console.error("Enroll error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const handleEnroll = handleEnrollCourse;
 
 export const handleGetEnrolledCourses: RequestHandler = async (req, res) => {
   const userId = (req as any).user.userId;

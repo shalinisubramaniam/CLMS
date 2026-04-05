@@ -4,7 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { connectDB, dbCheckMiddleware } from "./db";
 import { handleSignup, handleLogin } from "./routes/auth";
-import { handleCreateCourse, handleGetCourses, handleGetCourseById, handleEnroll, handleGetEnrolledCourses } from "./routes/course";
+import { handleCreateCourse, handleGetCourses, handleGetCourseById, handleEnroll, handleEnrollCourse, handleGetEnrolledCourses } from "./routes/course";
 import { protect, instructorOnly } from "./auth";
 import { handleSeedData } from "./routes/seed";
 import { handleAiChat, handleAiSummarize, handleAiQuizGen } from "./routes/ai";
@@ -41,6 +41,7 @@ export function createServer() {
   app.get("/api/courses/:id", handleGetCourseById);
   app.post("/api/courses", protect, instructorOnly, handleCreateCourse);
   app.post("/api/courses/:courseId/enroll", protect, handleEnroll);
+  app.post("/api/course/enroll/:courseId", protect, handleEnrollCourse);
   app.get("/api/my-courses", protect, handleGetEnrolledCourses);
 
   // Instructor specific routes
