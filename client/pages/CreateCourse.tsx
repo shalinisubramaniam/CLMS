@@ -129,13 +129,13 @@ export default function CreateCourse() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sm font-bold text-slate-700 uppercase tracking-widest ml-1">Price (USD)</Label>
+                  <Label htmlFor="price" className="text-sm font-bold text-slate-700 uppercase tracking-widest ml-1">Price (₹ Rupees)</Label>
                   <div className="relative">
-                    <DollarSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
                     <Input 
                       id="price" 
                       type="number" 
-                      placeholder="49" 
+                      placeholder="4999" 
                       className="h-14 bg-slate-50/50 border-slate-100 rounded-2xl focus:ring-indigo-500 pl-10 pr-6 font-bold"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}

@@ -51,7 +51,7 @@ export default function InstructorDashboard() {
   const stats = [
     { label: "Total Students", value: dashboardData?.totalStudents || 0, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Courses Created", value: dashboardData?.totalCourses || 0, icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { label: "Total Revenue", value: `$${dashboardData?.totalRevenue || 0}`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "Total Revenue", value: `₹${dashboardData?.totalRevenue || 0}`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
     { label: "Course Engagement", value: `${dashboardData?.engagementRate || 0}%`, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
   ];
 
@@ -174,10 +174,10 @@ export default function InstructorDashboard() {
                 </div>
                 <div className="space-y-5">
                   {[
-                    { name: "Alex Rivers", course: "React Fundamentals", time: "10m ago" },
-                    { name: "Maya Chen", course: "Advanced Node.js", time: "2h ago" },
-                    { name: "Liam Smith", course: "React Fundamentals", time: "5h ago" },
-                    { name: "Sofia Garcia", course: "UI Design", time: "Yesterday" },
+                    { name: "Arjun Nair", course: "React Fundamentals", time: "10m ago" },
+                    { name: "Ananya", course: "Advanced Node.js", time: "2h ago" },
+                    { name: "Shalini", course: "React Fundamentals", time: "5h ago" },
+                    { name: "Kanishka Sree", course: "UI Design", time: "Yesterday" },
                   ].map((student, idx) => (
                     <div key={idx} className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-500 border border-slate-200">
