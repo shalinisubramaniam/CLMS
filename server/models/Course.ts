@@ -5,7 +5,8 @@ const LessonSchema = new Schema({
   description: { type: String, default: "" },
   videoUrl: { type: String, required: true },
   duration: { type: Number, default: 0 }, // Duration in seconds
-  notesUrl: { type: String }
+  notesUrl: { type: String },
+  notesPdf: { type: String }
 });
 
 const QuizQuestionSchema = new Schema({
@@ -32,6 +33,7 @@ const CourseSchema = new Schema({
   modules: [ModuleSchema],
   price: { type: Number, default: 0 },
   category: { type: String, default: "Uncategorized" },
+  status: { type: String, enum: ["pending", "approved"], default: "pending" },
   students: [{ type: Schema.Types.ObjectId, ref: "User" }]
 }, { timestamps: true });
 

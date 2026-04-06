@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import path from "path";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { connectDB, dbCheckMiddleware } from "./db";
@@ -12,11 +13,11 @@ import { handleSaveQuizResult, handleGetQuizResults } from "./routes/quiz";
 import { handleAddModule, handleDeleteCourse } from "./routes/instructor";
 import { handleGetLeaderboard } from "./routes/leaderboard";
 import { handleGetCourseAnalytics } from "./routes/analytics";
-import { handleGetAdminUsers, handleDeleteUser, handleDeleteCourseAdmin } from "./routes/admin";
+import { handleGetAdminUsers, handleDeleteUser, handleDeleteCourseAdmin, handleApproveCourse, adminOnlyMiddleware } from "./routes/admin";
 import { handleGetRecommendations } from "./routes/recommendations";
 import { handleGetStudentDashboard, handleUpdateProgress, handleGetCourseProgress } from "./routes/student";
 import { handleCreateDiscussion, handleGetCourseDiscussions, handleAddReply, handleGetCourseNotes } from "./routes/discussion";
-import { handleGetInstructorDashboard, handleGetInstructorCourseStudents, handleCreateInstructorCourse, handleAddLesson } from "./routes/instructor-dashboard";
+import { handleGetInstructorDashboard, handleGetInstructorCourseStudents, handleCreateInstructorCourse, handleAddLesson, lessonUpload } from "./routes/instructor-dashboard";
 
 export function createServer() {
   const app = express();
@@ -25,6 +26,7 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
   // Connect to DB
   connectDB();
@@ -55,16 +57,10 @@ export function createServer() {
   app.get("/api/analytics/course/:id", protect, instructorOnly, handleGetCourseAnalytics);
 
   // Admin routes
-  const adminOnly = (req: any, res: any, next: any) => {
-    if (req.user && req.user.role === "admin") {
-      next();
-    } else {
-      res.status(403).json({ message: "Admin access only" });
-    }
-  };
-  app.get("/api/admin/users", protect, adminOnly, handleGetAdminUsers);
-  app.delete("/api/admin/users/:id", protect, adminOnly, handleDeleteUser);
-  app.delete("/api/admin/courses/:id", protect, adminOnly, handleDeleteCourseAdmin);
+  app.get("/api/admin/users", protect, adminOnlyMiddleware, handleGetAdminUsers);
+  app.delete("/api/admin/users/:id", protect, adminOnlyMiddleware, handleDeleteUser);
+  app.delete("/api/admin/courses/:id", protect, adminOnlyMiddleware, handleDeleteCourseAdmin);
+  app.put("/api/admin/course/:id/approve", protect, adminOnlyMiddleware, handleApproveCourse);
 
   // Quiz routes
   app.post("/api/quiz/results", protect, handleSaveQuizResult);
@@ -91,7 +87,7 @@ export function createServer() {
   app.get("/api/instructor/dashboard", protect, handleGetInstructorDashboard);
   app.get("/api/instructor/courses/:courseId/students", protect, handleGetInstructorCourseStudents);
   app.post("/api/instructor/courses", protect, instructorOnly, handleCreateInstructorCourse);
-  app.post("/api/instructor/lessons", protect, instructorOnly, handleAddLesson);
+  app.post("/api/instructor/lessons", protect, instructorOnly, lessonUpload.single("videoFile"), handleAddLesson);
 
   // Seed route (for testing purposes)
   app.get("/api/seed", handleSeedData);

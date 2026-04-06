@@ -1,7 +1,23 @@
 import { RequestHandler } from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
 import { Course } from "../models/Course";
 import { Enrollment } from "../models/Activities";
 import { QuizResult } from "../models/Activities";
+
+const uploadDir = path.join(process.cwd(), "uploads", "lessons");
+fs.mkdirSync(uploadDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) => {
+    const safeName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    cb(null, safeName);
+  }
+});
+
+export const lessonUpload = multer({ storage });
 
 export const handleGetInstructorDashboard: RequestHandler = async (req, res) => {
   const instructorId = (req as any).user.userId;
@@ -93,6 +109,7 @@ export const handleCreateInstructorCourse: RequestHandler = async (req, res) => 
       thumbnail: thumbnail || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070",
       price,
       category,
+      status: "pending",
       modules: []
     });
 
@@ -105,25 +122,40 @@ export const handleCreateInstructorCourse: RequestHandler = async (req, res) => 
 
 export const handleAddLesson: RequestHandler = async (req, res) => {
   const instructorId = (req as any).user.userId;
-  const { courseId, moduleId, title, videoUrl, notesUrl } = req.body;
+  const { courseId, moduleId, title, description, duration, videoUrl, notesPdf, notesUrl } = req.body;
 
   try {
-    // Verify course belongs to instructor
-    const course = await Course.findOne({ _id: courseId, instructor: instructorId });
+    const course = await Course.findById(courseId);
     if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    if (course.instructor.toString() !== instructorId) {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    // Find the module and add lesson
+    if (course.status !== "approved") {
+      return res.status(400).json({ message: "Course must be approved before adding lessons" });
+    }
+
     const module = course.modules.find(m => m._id.toString() === moduleId);
     if (!module) {
       return res.status(404).json({ message: "Module not found" });
     }
 
+    const uploadedVideoUrl = req.file ? `/uploads/lessons/${req.file.filename}` : videoUrl;
+
+    if (!uploadedVideoUrl) {
+      return res.status(400).json({ message: "Video URL or file upload is required" });
+    }
+
     module.lessons.push({
       title,
-      videoUrl,
-      notesUrl
+      description: description || "",
+      videoUrl: uploadedVideoUrl,
+      duration: Number(duration) || 0,
+      notesUrl: notesUrl || notesPdf || "",
+      notesPdf: notesPdf || notesUrl || ""
     } as any);
 
     await course.save();

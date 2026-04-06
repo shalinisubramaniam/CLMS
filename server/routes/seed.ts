@@ -7,14 +7,29 @@ import bcrypt from "bcryptjs";
 
 export const handleSeedData: RequestHandler = async (req, res) => {
   try {
-    // Clear existing data (preserve admin)
-    await User.deleteMany({ email: { $ne: "admin@clms.com" } });
+    // Clear existing data (preserve admin accounts)
+    await User.deleteMany({ email: { $nin: ["admin@clms.com", "admin@demo.com"] } });
     await Course.deleteMany({});
     await Enrollment.deleteMany({});
     await Progress.deleteMany({});
 
     // Create Demo Instructors
     const hashedPassword = await bcrypt.hash("password123", 10);
+    const hashedAdminPassword = await bcrypt.hash("admin123", 10);
+
+    await User.findOneAndUpdate(
+      { email: "admin@demo.com" },
+      {
+        name: "Admin",
+        email: "admin@demo.com",
+        password: hashedAdminPassword,
+        role: "admin",
+        points: 0,
+        badges: [],
+        streaks: 0
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
     const instructor1 = await User.create({
       name: "Rahul Sharma",
@@ -66,6 +81,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop",
         price: 4999,
         category: "Frontend",
+        status: "approved",
         modules: [
           {
             title: "Module 1: React Fundamentals",
@@ -135,6 +151,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         thumbnail: "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*pqb9zL3Y_YPSMu9kstLN7g.jpeg",
         price: 5999,
         category: "Backend",
+        status: "approved",
         modules: [
           {
             title: "Module 1: Node.js Basics",
@@ -203,6 +220,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop",
         price: 7999,
         category: "Full Stack",
+        status: "approved",
         modules: [
           {
             title: "Module 1: Project Setup & Architecture",
@@ -242,6 +260,7 @@ export const handleSeedData: RequestHandler = async (req, res) => {
         thumbnail: "https://www.webskittersacademy.in/wp-content/uploads/2024/10/Academy-Blog-Banner-23-10-2024.jpg",
         price: 3999,
         category: "Design",
+        status: "approved",
         modules: [
           {
             title: "Module 1: Design Fundamentals",

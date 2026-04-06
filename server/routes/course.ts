@@ -15,6 +15,7 @@ export const handleCreateCourse: RequestHandler = async (req, res) => {
       thumbnail,
       price,
       category,
+      status: "pending",
       modules: []
     });
 
@@ -27,7 +28,7 @@ export const handleCreateCourse: RequestHandler = async (req, res) => {
 
 export const handleGetCourses: RequestHandler = async (req, res) => {
   try {
-    const courses = await Course.find().populate("instructor", "name");
+    const courses = await Course.find({ status: "approved" }).populate("instructor", "name");
     res.json(courses);
   } catch (err) {
     console.error("Get courses error:", err);
@@ -38,7 +39,7 @@ export const handleGetCourses: RequestHandler = async (req, res) => {
 export const handleGetCourseById: RequestHandler = async (req, res) => {
   const { id } = req.params;
   try {
-    const course = await Course.findById(id).populate("instructor", "name email");
+    const course = await Course.findOne({ _id: id, status: "approved" }).populate("instructor", "name email");
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
@@ -62,6 +63,10 @@ export const handleEnrollCourse: RequestHandler = async (req, res) => {
 
     if (!user || !course) {
       return res.status(404).json({ message: "Course or user not found" });
+    }
+
+    if (course.status !== "approved") {
+      return res.status(400).json({ message: "Course is not approved yet" });
     }
 
     const alreadyEnrolled =
