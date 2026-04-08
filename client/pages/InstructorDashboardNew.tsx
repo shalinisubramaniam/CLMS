@@ -120,7 +120,7 @@ export default function InstructorDashboard() {
                       <span className="flex items-center gap-1.5"><Video size={14} /> {course.modules?.length || 0} Modules</span>
                     </div>
                     <div className="flex items-center justify-between border-t border-slate-50 pt-4">
-                      <p className="font-bold text-slate-900">${course.price}</p>
+                      <p className="font-bold text-slate-900">₹{course.price}</p>
                       <Link to={`/instructor/analytics/${course._id}`} className="text-sm font-semibold text-indigo-600 flex items-center gap-1 hover:text-indigo-500">
                         View Analytics <ArrowRight size={14} />
                       </Link>
